@@ -63,6 +63,7 @@ export const PostFrontmatterSchema = PostSchema.pick({
     aiDisclosure: true,
 }).extend({
     date: z.string(), // Will be parsed to publishedAt
+    author: z.string().optional(), // Author ID, optional (defaults to first author in fuel source)
 });
 
 export type PostFrontmatter = z.infer<typeof PostFrontmatterSchema>;

@@ -12,7 +12,9 @@
     },
     "dependencies": {
         "astro": "^4.0.0",
-        "@astrojs/mdx": "^2.0.0"
+        "@astrojs/mdx": "^2.0.0",
+        "@seethru/fuel-loader": "*",
+        "@seethru/content-schema": "*"
     },
     "devDependencies": {
         "@astrojs/check": "^0.3.0",

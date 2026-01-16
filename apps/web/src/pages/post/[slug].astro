@@ -1,36 +1,33 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Attribution from '../../components/Attribution.astro';
+import { loadAllFuels } from '@seethru/fuel-loader';
+import { generatePostPaths, getPostBySlug } from '@seethru/fuel-loader/src/astro-integration';
+import { fuelConfig } from '../../fuel.config';
 
-// Get slug from URL
-export function getStaticPaths() {
-  // For now, return empty - will be populated with content
-  // In production, this will load from content collection
-  return [{ params: { slug: 'sample-post' } }];
+// Load all content and generate static paths
+export async function getStaticPaths() {
+  const result = await loadAllFuels(fuelConfig);
+
+  // Log errors for debugging
+  if (result.totalErrors > 0) {
+    console.warn(`⚠️  Loaded content with ${result.totalErrors} errors`);
+    result.fuels.forEach(fuel => {
+      fuel.errors.forEach(error => {
+        console.error(`  ${error.type}: ${error.filePath} - ${error.message}`);
+      });
+    });
+  }
+
+  console.log(`✅ Loaded ${result.allPosts.length} posts from ${result.fuels.length} fuel source(s)`);
+
+  return generatePostPaths(result);
 }
 
-const { slug } = Astro.params;
+const { post } = Astro.props;
 
-// Sample post data - will be replaced with actual content loading
-const post = {
-  title: 'Welcome to seethru.media',
-  subtitle: 'A trust-first news platform',
-  author: 'seethru.media',
-  authorUrl: '/',
-  date: new Date('2025-12-28'),
-  content: `
-    <p>This is a sample post demonstrating the platform.</p>
-    <p>seethru.media is built on principles of:</p>
-    <ul>
-      <li>Radical transparency</li>
-      <li>No outrage optimization</li>
-      <li>Geographic daily briefs</li>
-      <li>Fair creator compensation</li>
-    </ul>
-    <p>Read our Trust Principles to learn more.</p>
-  `,
-  aiDisclosure: 'none' as const,
-};
+// Format date for attribution
+const postDate = new Date(post.publishedAt);
 ---
 
 <BaseLayout title={post.title}>
@@ -46,10 +43,10 @@ const post = {
       }
       <div style="margin-top: var(--space-4);">
         <Attribution
-          author={post.author}
-          authorUrl={post.authorUrl}
-          date={post.date}
-          source="seethru.media"
+          author={post.authorName}
+          authorUrl="/"
+          date={postDate}
+          source={post.source}
           aiDisclosure={post.aiDisclosure}
         />
       </div>

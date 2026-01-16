@@ -1,17 +1,24 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadAllFuels } from '@seethru/fuel-loader';
+import { getDailyBrief } from '@seethru/fuel-loader/src/astro-integration';
+import { fuelConfig } from '../fuel.config';
 
 /**
  * seethru.media Landing Page
  * A public-facing page explaining the project and inviting contribution
  */
 
+// Load content for daily brief
+const fuelResult = await loadAllFuels(fuelConfig);
+const briefPosts = getDailyBrief(fuelResult, { limit: 5 });
+
 const statusItems = [
   { text: 'Monorepo scaffold', done: true },
   { text: 'Design system', done: true },
   { text: 'Content schemas', done: true },
   { text: 'Governance docs', done: true },
-  { text: 'Content loading', done: false },
+  { text: 'Content loading', done: true },
   { text: 'User accounts', done: false },
   { text: 'Jury system', done: false },
   { text: 'Live deployment', done: false },
@@ -46,6 +53,37 @@ const statusItems = [
       the algorithms are public, the moderation is visible, and privacy is the default.
     </p>
   </section>
+
+  <!-- Daily Brief Section -->
+  {
+    briefPosts.length > 0 && (
+      <section class="section">
+        <h2>Latest Posts</h2>
+        <p class="muted">Demonstrating the content loading system</p>
+        <div class="posts-list">
+          {briefPosts.map((post) => (
+            <article class="post-card">
+              <h3>
+                <a href={`/post/${post.slug}`}>{post.title}</a>
+              </h3>
+              <p class="post-excerpt">{post.excerpt}</p>
+              <div class="post-meta">
+                <span>{post.authorName}</span>
+                <span>·</span>
+                <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
+                {post.tags.length > 0 && (
+                  <>
+                    <span>·</span>
+                    <span class="tags">{post.tags.slice(0, 2).join(', ')}</span>
+                  </>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   <!-- Current Status -->
   <section class="section">
@@ -288,6 +326,56 @@ const statusItems = [
   .link-list a {
     color: var(--color-primary);
     font-weight: 500;
+  }
+
+  .posts-list {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .post-card {
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+  }
+
+  .post-card:hover {
+    border-color: var(--color-primary);
+  }
+
+  .post-card h3 {
+    margin-bottom: var(--space-2);
+    font-size: 1.1rem;
+  }
+
+  .post-card h3 a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .post-card h3 a:hover {
+    color: var(--color-primary);
+  }
+
+  .post-excerpt {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-3);
+  }
+
+  .post-meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  .post-meta .tags {
+    font-style: italic;
   }
 
   @media (max-width: 600px) {

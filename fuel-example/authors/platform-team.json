@@ -1,0 +1,14 @@
+{
+    "id": "platform-team",
+    "name": "seethru.media Team",
+    "slug": "platform-team",
+    "bio": "The team building transparent news infrastructure",
+    "avatar": "https://via.placeholder.com/150",
+    "links": {
+        "website": "https://seethru.media"
+    },
+    "verified": true,
+    "verifiedAt": "2025-01-01T00:00:00Z",
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2025-01-16T00:00:00Z"
+}
